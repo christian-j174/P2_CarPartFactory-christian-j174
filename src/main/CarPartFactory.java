@@ -2,21 +2,27 @@ package main;
 
 import interfaces.Stack;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 
 import interfaces.List;
 import interfaces.Map;
+import data_structures.ArrayList;
 
 public class CarPartFactory {
 
-    // Data 
+    // CSV Data 
     String orderPath; 
     String partsPath;
 
     // Objects Models
     List<PartMachine> machines;
     Stack<CarPart> productionBin;
+
+    // Que hace?
     Map<Integer, CarPart> partCatalog;
+
     Map<Integer, List<CarPart>> inventory;
     List<Order> orders;
     Map<Integer, Integer> defectives;
@@ -75,9 +81,35 @@ public class CarPartFactory {
         this.defectives = defectives;
     }
 
-    public void setupOrders(String path) throws IOException {
+    public List<Order> setupOrders(String path) throws IOException {
        // here you read and add from the csv, lets start!
+       List<Order> orders = new ArrayList<>();
+       try(BufferedReader br = new BufferedReader(new FileReader(path))){
+            br.readLine(); // skip first line
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] values = line.split(",");
+                int id = Integer.parseInt(values[0].trim());
+                String customer = values[1].trim();
+                List<String> requestedParts = parseRequestedParts(values[2]);
+
+                orders.add(new Order(id, customer, null, false));
+            }
+       } catch (IOException e) {
+        e.printStackTrace();
+       }
+       return orders;
+
     }
+        // Helper function to setup Orders 
+        List<String> parseRequestedParts(String partsString) {
+            List<String> tmp = new ArrayList<>();
+            String[] splitParts = partsString.split("-");
+            for (String part : splitParts) {
+                tmp.add(part.trim());
+            }
+            return tmp;
+        }
 
 
     public void setupMachines(String path) throws IOException {
@@ -102,6 +134,7 @@ public class CarPartFactory {
 
    
     public void processOrders() {
+        //this.orders = setupOrders(orderPath);
         
     }
     /**
