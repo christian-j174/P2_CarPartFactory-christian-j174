@@ -76,7 +76,7 @@ public class CarPartFactory {
     }
 
     public void setupOrders(String path) throws IOException {
-       // here you read and add from the csv
+       // here you read and add from the csv, lets start!
     }
 
 
