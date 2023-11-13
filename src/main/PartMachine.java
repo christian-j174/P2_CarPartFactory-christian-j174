@@ -23,6 +23,15 @@ public class PartMachine {
         this.period = period;
         this.weightError = weightError;
         this.chanceOfDefective = chanceOfDefective;
+        
+        for(int i = period - 1; i >= 0; i--)
+            timer.enqueue(i);
+
+        for(int j = 0; j < 10; j++)
+            this.conveyorBelt.enqueue(null);
+        
+        
+        
 
     }
     public int getId() {
@@ -72,9 +81,11 @@ public class PartMachine {
         // this.conveyorBelt
     }
     public int tickTimer() {
-        return timer.dequeue();// verify this
-      // decrease timer  
+        int frontTimer = timer.front(); // get the value at the front without removing it
+        timer.enqueue(timer.dequeue()); // remove the front value and places it at the back
+        return frontTimer;
     }
+    
     public CarPart produceCarPart() {
        return new CarPart(random.nextInt(), null, 10, false);
     }
