@@ -1,62 +1,75 @@
 package main;
 
+import java.util.Random;
+
 import interfaces.Queue;
 
 public class PartMachine {
+
+    int id;
+    CarPart p1;
+    int period;
+    double weightError;
+    int chanceOfDefective;
+    Queue<Integer> timer;
+    Queue<CarPart> conveyorBelt;
+    int totalPartProduced = 0;
    
     public PartMachine(int id, CarPart p1, int period, double weightError, int chanceOfDefective) {
         
     }
     public int getId() {
-       
+       return id;
     }
     public void setId(int id) {
-        
+        this.id = id;
     }
     public Queue<Integer> getTimer() {
-       
+       return timer;
     }
     public void setTimer(Queue<Integer> timer) {
-        
+        this.timer = timer;
     }
     public CarPart getPart() {
-       
+       return p1;
     }
     public void setPart(CarPart part1) {
-        
+        this.p1 = p1;
     }
     public Queue<CarPart> getConveyorBelt() {
-        
+        return conveyorBelt;
     }
     public void setConveyorBelt(Queue<CarPart> conveyorBelt) {
-    	
+    	this.conveyorBelt = conveyorBelt;
     }
+
     public int getTotalPartsProduced() {
-         
+         return totalPartProduced;
     }
     public void setTotalPartsProduced(int count) {
-    	
+    	this.totalPartProduced = count;
     }
     public double getPartWeightError() {
-        
+        return weightError;
     }
     public void setPartWeightError(double partWeightError) {
-        
+        this.weightError = partWeightError;
     }
     public int getChanceOfDefective() {
-        
+        return chanceOfDefective;
     }
     public void setChanceOfDefective(int chanceOfDefective) {
-        
+        this.chanceOfDefective = chanceOfDefective;
     }
     public void resetConveyorBelt() {
-        
+        // this.conveyorBelt
     }
     public int tickTimer() {
-       
+        return timer.dequeue();// verify this
+      // decrease timer  
     }
     public CarPart produceCarPart() {
-       
+       return new CarPart(1, null, 10, false);
     }
 
     /**
