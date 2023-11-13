@@ -18,7 +18,12 @@ public class PartMachine {
 
    
     public PartMachine(int id, CarPart p1, int period, double weightError, int chanceOfDefective) {
-        
+        this.id = id;
+        this.p1 = p1;
+        this.period = period;
+        this.weightError = weightError;
+        this.chanceOfDefective = chanceOfDefective;
+
     }
     public int getId() {
        return id;
