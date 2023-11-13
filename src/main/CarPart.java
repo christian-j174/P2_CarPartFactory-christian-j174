@@ -1,34 +1,39 @@
 package main;
 
 public class CarPart {
+    int id; 
+    String name; 
+    double weight; 
+    boolean isDefective;
+
     
-    public CarPart(int id, String name, double weight, boolean isDetective) {
+    public CarPart(int id, String name, double weight, boolean isDefective) {
         
     }
     public int getId() {
-        
+        return this.id;
     }
     public void setId(int id) {
-        
+        this.id = id;
     }
     public String getName() {
-        
+       return this.name; 
     }
     public void setName(String name) {
-        
+        this.name = name;
     }
     public double getWeight() {
-      
+      return this.weight;
     }
     public void setWeight(double weight) {
-      
+      this.weight = weight;
     }
 
-    public boolean isDetective() {
-      
+    public boolean isDefective() {
+      return this.isDefective;
     }
-    public void setDetective(boolean isDetective) {
-        
+    public void setDefective(boolean isDefective) {
+        this.isDefective = isDefective;
     }
     /**
      * Returns the parts name as its string representation
