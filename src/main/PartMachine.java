@@ -14,6 +14,8 @@ public class PartMachine {
     Queue<Integer> timer;
     Queue<CarPart> conveyorBelt;
     int totalPartProduced = 0;
+    Random random = new Random();
+
    
     public PartMachine(int id, CarPart p1, int period, double weightError, int chanceOfDefective) {
         
@@ -69,7 +71,7 @@ public class PartMachine {
       // decrease timer  
     }
     public CarPart produceCarPart() {
-       return new CarPart(1, null, 10, false);
+       return new CarPart(random.nextInt(), null, 10, false);
     }
 
     /**
