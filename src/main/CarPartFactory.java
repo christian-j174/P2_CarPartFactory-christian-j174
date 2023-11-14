@@ -8,10 +8,13 @@ import interfaces.Stack;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.HashMap;
 
+import interfaces.HashFunction;
 import interfaces.List;
 import interfaces.Map;
 import data_structures.ArrayList;
+import data_structures.HashTableSC;
 
 public class CarPartFactory {
 
@@ -29,6 +32,8 @@ public class CarPartFactory {
     Map<Integer, List<CarPart>> inventory;
     List<Order> orders;
     Map<Integer, Integer> defectives;
+
+    HashFunction<Integer> hashFunction;
 
 
         
@@ -87,8 +92,34 @@ public class CarPartFactory {
 
 
     public void setupOrders(String path) throws IOException {
-       // here you read and add from the csv, lets start!
+        // Map<Integer, Order> ordersMap = new HashTableSC<>(0, null);
+        // try (BufferedReader br = new BufferedReader(new FileReader(path))) {
+        //     br.readLine(); // Skip the header line
+        //     String line;
+        //     while ((line = br.readLine()) != null) {
+        //         String[] values = line.split(",", 3);
+        //         int id = Integer.parseInt(values[0].trim());
+        //         String customer = values[1].trim();
+        //         Map<Integer, Integer> requestedParts = parseRequestedParts(values[2]);
+
+        //         Order order = new Order(customer, requestedParts); // Assuming Order has a constructor like this
+        //         ordersMap.put(id, order);
+        //     }
+        // }
     }
+
+    // private Map<Integer, Integer> parseRequestedParts(String partsString) {
+    //     Map<Integer, Integer> parts = new HashMap<>();
+    //     String[] splitParts = partsString.split("-");
+    //     for (String part : splitParts) {
+    //         part = part.replaceAll("[()]", ""); // Remove parentheses
+    //         String[] partDetails = part.split(" ");
+    //         int partId = Integer.parseInt(partDetails[0].trim());
+    //         int amount = Integer.parseInt(partDetails[1].trim());
+    //         parts.put(partId, amount);
+    //     }
+    //     return parts;
+    // }
 
 
 
