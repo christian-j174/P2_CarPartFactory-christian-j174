@@ -2,6 +2,9 @@ package main;
 
 import interfaces.Stack;
 
+
+
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -30,7 +33,8 @@ public class CarPartFactory {
 
         
     public CarPartFactory(String orderPath, String partsPath) throws IOException {
-                
+        this.orderPath = orderPath;
+        this.partsPath = partsPath;
     }
 
 
@@ -81,40 +85,42 @@ public class CarPartFactory {
         this.defectives = defectives;
     }
 
-    public List<Order> setupOrders(String path) throws IOException {
+
+    public void setupOrders(String path) throws IOException {
        // here you read and add from the csv, lets start!
-       List<Order> orders = new ArrayList<>();
-       try(BufferedReader br = new BufferedReader(new FileReader(path))){
-            br.readLine(); // skip first line
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] values = line.split(",");
-                int id = Integer.parseInt(values[0].trim());
-                String customer = values[1].trim();
-                List<String> requestedParts = parseRequestedParts(values[2]);
-
-                orders.add(new Order(id, customer, null, false));
-            }
-       } catch (IOException e) {
-        e.printStackTrace();
-       }
-       return orders;
-
     }
-        // Helper function to setup Orders 
-        List<String> parseRequestedParts(String partsString) {
-            List<String> tmp = new ArrayList<>();
-            String[] splitParts = partsString.split("-");
-            for (String part : splitParts) {
-                tmp.add(part.trim());
-            }
-            return tmp;
-        }
+
 
 
     public void setupMachines(String path) throws IOException {
        // here you read and add from the csv
+       List<PartMachine> machines1 = new ArrayList<>();
+       try (BufferedReader br = new BufferedReader(new FileReader(path))) {
+           br.readLine(); // Skip the header line
+           String line;
+           while ((line = br.readLine()) != null) {
+               String[] values = line.split(",");
+               int id = Integer.parseInt(values[0].trim());
+               String partName = values[1].trim();
+               double weight = Double.parseDouble(values[2].trim());
+               double weightError = Double.parseDouble(values[3].trim());
+               int period = Integer.parseInt(values[4].trim());
+               int chanceOfDefective = Integer.parseInt(values[5].trim());
+
+               CarPart carPart = new CarPart(id, partName, weight,false);
+               PartMachine machine = new PartMachine(id, carPart, period, weightError, chanceOfDefective);
+
+               machines1.add(machine);
+           }
+       } catch (IOException e) {
+           e.printStackTrace();
+       }
+       setMachines(machines1);
+
     }
+
+
+
     public void setupCatalog() {
         
     }
