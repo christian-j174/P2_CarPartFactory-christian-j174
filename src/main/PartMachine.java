@@ -29,9 +29,6 @@ public class PartMachine {
 
         for(int j = 0; j < 10; j++)
             this.conveyorBelt.enqueue(null);
-        
-        
-        
 
     }
     public int getId() {
