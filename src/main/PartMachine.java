@@ -2,6 +2,7 @@ package main;
 
 import java.util.Random;
 
+import data_structures.ListQueue;
 import interfaces.Queue;
 
 public class PartMachine {
@@ -23,12 +24,14 @@ public class PartMachine {
         this.period = period;
         this.weightError = weightError;
         this.chanceOfDefective = chanceOfDefective;
+        this.conveyorBelt = new ListQueue<CarPart>();
+        this.timer = new ListQueue<Integer>();
         
         for(int i = period - 1; i >= 0; i--)
-            this.timer.enqueue(i);
+            timer.enqueue(i);
 
         for(int j = 0; j < 10; j++)
-            this.conveyorBelt.enqueue(null);
+            conveyorBelt.enqueue(new CarPart(200+j, null, 100, false));
 
     }
     public int getId() {
@@ -47,7 +50,7 @@ public class PartMachine {
        return p1;
     }
     public void setPart(CarPart part1) {
-        this.p1 = p1;
+        this.p1 = part1;
     }
     public Queue<CarPart> getConveyorBelt() {
         return conveyorBelt;

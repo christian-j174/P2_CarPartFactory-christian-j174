@@ -8,7 +8,11 @@ public class CarPart {
 
     
     public CarPart(int id, String name, double weight, boolean isDefective) {
-        
+    this.id = id;
+    this.name = name;
+    this.weight = weight;
+    this.isDefective = isDefective;
+    
     }
     public int getId() {
         return this.id;

@@ -42,6 +42,15 @@ public class CarPartFactory {
         this.partsPath = partsPath;
     }
 
+    String getPartsPath(){
+        return this.partsPath;
+    }
+
+    String getOrderPath(){
+        return orderPath; 
+
+    }
+
 
     public List<PartMachine> getMachines() {
        return this.machines;
