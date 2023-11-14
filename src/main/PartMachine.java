@@ -25,7 +25,7 @@ public class PartMachine {
         this.chanceOfDefective = chanceOfDefective;
         
         for(int i = period - 1; i >= 0; i--)
-            timer.enqueue(i);
+            this.timer.enqueue(i);
 
         for(int j = 0; j < 10; j++)
             this.conveyorBelt.enqueue(null);
@@ -78,8 +78,18 @@ public class PartMachine {
         this.chanceOfDefective = chanceOfDefective;
     }
     public void resetConveyorBelt() {
-        // this.conveyorBelt
+        // clear the conveyor belt
+        while (!conveyorBelt.isEmpty()) {
+            conveyorBelt.dequeue();
+        }
+    
+        // fill the conveyor belt with null values
+        for (int i = 0; i < 10; i++) 
+            conveyorBelt.enqueue(null);
     }
+    
+
+
     public int tickTimer() {
         int frontTimer = timer.front(); // get the value at the front without removing it
         timer.enqueue(timer.dequeue()); // remove the front value and places it at the back
@@ -87,8 +97,22 @@ public class PartMachine {
     }
     
     public CarPart produceCarPart() {
-       return new CarPart(random.nextInt(), null, 10, false);
+        CarPart frontPart = conveyorBelt.dequeue(); // Get and remove the front part from the conveyor belt
+    
+        if (tickTimer() == 0) { // Check if a part is being produced
+            double weight = p1.getWeight() - weightError + (2 * weightError * random.nextDouble()); // Random weight within the error range
+            boolean isDefective = (totalPartProduced % chanceOfDefective) == 0; // Check if part is defective
+    
+            CarPart newPart = new CarPart(p1.getId(), p1.getName(), weight, isDefective); // Create new part
+            conveyorBelt.enqueue(newPart); // Add new part to the conveyor belt
+            totalPartProduced++; // Increment the count of total parts produced
+        } else {
+            conveyorBelt.enqueue(null); // Add null to the conveyor belt if no part is being produced
+        }
+    
+        return frontPart; // Return the part that was at the front of the conveyor belt
     }
+    
 
     /**
      * Returns string representation of a Part Machine in the following format:
