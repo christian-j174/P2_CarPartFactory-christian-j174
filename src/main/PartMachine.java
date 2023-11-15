@@ -30,8 +30,11 @@ public class PartMachine {
         for(int i = period - 1; i >= 0; i--)
             timer.enqueue(i);
 
+        // for(int j = 0; j < 10; j++)
+        //     conveyorBelt.enqueue(new CarPart(200+j, null, 100, false));
         for(int j = 0; j < 10; j++)
-            conveyorBelt.enqueue(new CarPart(200+j, null, 100, false));
+            conveyorBelt.enqueue(null);
+
 
     }
     public int getId() {
