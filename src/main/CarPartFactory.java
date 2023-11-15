@@ -15,6 +15,7 @@ import interfaces.List;
 import interfaces.Map;
 import data_structures.ArrayList;
 import data_structures.HashTableSC;
+//import data_structures.BasicHashFunction;
 
 public class CarPartFactory {
 
@@ -24,16 +25,25 @@ public class CarPartFactory {
 
     // Objects Models
     List<PartMachine> machines;
+    List<Order> orders;
+
     Stack<CarPart> productionBin;
 
     // Que hace?
     Map<Integer, CarPart> partCatalog;
 
     Map<Integer, List<CarPart>> inventory;
-    List<Order> orders;
+    
     Map<Integer, Integer> defectives;
 
-    HashFunction<Integer> hashFunction;
+    class SimpleHashFunction implements HashFunction<Integer> {
+        @Override
+        public int hashCode(Integer key) {
+            // Simple hash code implementation
+            return key.hashCode();
+        }
+    }
+
 
 
         
@@ -101,34 +111,38 @@ public class CarPartFactory {
 
 
     public void setupOrders(String path) throws IOException {
-        // Map<Integer, Order> ordersMap = new HashTableSC<>(0, null);
-        // try (BufferedReader br = new BufferedReader(new FileReader(path))) {
-        //     br.readLine(); // Skip the header line
-        //     String line;
-        //     while ((line = br.readLine()) != null) {
-        //         String[] values = line.split(",", 3);
-        //         int id = Integer.parseInt(values[0].trim());
-        //         String customer = values[1].trim();
-        //         Map<Integer, Integer> requestedParts = parseRequestedParts(values[2]);
+        //HashFunction<Integer> intHashFunction = new BasicHashFunction<Integer>();
+        ArrayList<Order> tmpOrders = new ArrayList(110);
+        Map<Integer, Order> ordersMap = new HashTableSC<>(105,new SimpleHashFunction());
+        try (BufferedReader br = new BufferedReader(new FileReader(path))) {
+            br.readLine(); // Skip the header line
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] values = line.split(",", 3);
+                int id = Integer.parseInt(values[0].trim());
+                String customer = values[1].trim();
+                Map<Integer, Integer> requestedParts = parseRequestedParts(values[2]);
 
-        //         Order order = new Order(customer, requestedParts); // Assuming Order has a constructor like this
-        //         ordersMap.put(id, order);
-        //     }
-        // }
+                Order order = new Order(id, customer, requestedParts, false);
+                tmpOrders.add(order);
+                ordersMap.put(id, order); // key id client, and his order
+            }
+        }
+        setOrders(tmpOrders);
     }
 
-    // private Map<Integer, Integer> parseRequestedParts(String partsString) {
-    //     Map<Integer, Integer> parts = new HashMap<>();
-    //     String[] splitParts = partsString.split("-");
-    //     for (String part : splitParts) {
-    //         part = part.replaceAll("[()]", ""); // Remove parentheses
-    //         String[] partDetails = part.split(" ");
-    //         int partId = Integer.parseInt(partDetails[0].trim());
-    //         int amount = Integer.parseInt(partDetails[1].trim());
-    //         parts.put(partId, amount);
-    //     }
-    //     return parts;
-    // }
+    private Map<Integer, Integer> parseRequestedParts(String partsString) {
+        Map<Integer, Integer> parts = new HashTableSC<>(10,new SimpleHashFunction());
+        String[] splitParts = partsString.split("-");
+        for (String part : splitParts) {
+            part = part.replaceAll("[()]", ""); // Remove parentheses
+            String[] partDetails = part.split(" ");
+            int partId = Integer.parseInt(partDetails[0].trim());
+            int amount = Integer.parseInt(partDetails[1].trim());
+            parts.put(partId, amount);
+        }
+        return parts;
+     }
 
 
 
