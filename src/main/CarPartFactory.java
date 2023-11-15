@@ -8,33 +8,29 @@ import interfaces.Stack;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.HashMap;
-
 import interfaces.HashFunction;
 import interfaces.List;
 import interfaces.Map;
 import data_structures.ArrayList;
 import data_structures.HashTableSC;
-//import data_structures.BasicHashFunction;
+import data_structures.LinkedStack;
+
 
 public class CarPartFactory {
 
-    // CSV Data 
-    String orderPath; 
-    String partsPath;
-
-    // Objects Models
     List<PartMachine> machines;
     List<Order> orders;
 
-    Stack<CarPart> productionBin;
+    Stack<CarPart> productionBin = new LinkedStack<>();
 
-    // Que hace?
+    
+
+
     Map<Integer, CarPart> partCatalog;
 
     Map<Integer, List<CarPart>> inventory;
     
-    Map<Integer, Integer> defectives;
+    Map<Integer, Integer> defectives = new HashTableSC<>(20, new SimpleHashFunction());;
 
     class SimpleHashFunction implements HashFunction<Integer> {
         @Override
@@ -48,18 +44,15 @@ public class CarPartFactory {
 
         
     public CarPartFactory(String orderPath, String partsPath) throws IOException {
-        this.orderPath = orderPath;
-        this.partsPath = partsPath;
+        
+        setupOrders(orderPath);
+        setupMachines(partsPath);
+        setupInventory();
+
+        
     }
 
-    String getPartsPath(){
-        return this.partsPath;
-    }
 
-    String getOrderPath(){
-        return orderPath; 
-
-    }
 
 
     public List<PartMachine> getMachines() {
@@ -81,6 +74,7 @@ public class CarPartFactory {
     public Map<Integer, CarPart> getPartCatalog() {
         return partCatalog;
     }
+
     public void setPartCatalog(Map<Integer, CarPart> partCatalog) {
         this.partCatalog = partCatalog;
     }
@@ -112,7 +106,7 @@ public class CarPartFactory {
 
     public void setupOrders(String path) throws IOException {
         //HashFunction<Integer> intHashFunction = new BasicHashFunction<Integer>();
-        ArrayList<Order> tmpOrders = new ArrayList(110);
+        ArrayList<Order> tmpOrders = new ArrayList<Order>(110);
         Map<Integer, Order> ordersMap = new HashTableSC<>(105,new SimpleHashFunction());
         try (BufferedReader br = new BufferedReader(new FileReader(path))) {
             br.readLine(); // Skip the header line
@@ -149,6 +143,7 @@ public class CarPartFactory {
     public void setupMachines(String path) throws IOException {
        // here you read and add from the csv
        List<PartMachine> machines1 = new ArrayList<>();
+       Map<Integer, CarPart> partCatalogTmp = new HashTableSC<>(20,new SimpleHashFunction());
        try (BufferedReader br = new BufferedReader(new FileReader(path))) {
            br.readLine(); // Skip the header line
            String line;
@@ -164,39 +159,116 @@ public class CarPartFactory {
                CarPart carPart = new CarPart(id, partName, weight,false);
                PartMachine machine = new PartMachine(id, carPart, period, weightError, chanceOfDefective);
 
+               partCatalogTmp.put(carPart.getId(), carPart);
                machines1.add(machine);
            }
        } catch (IOException e) {
            e.printStackTrace();
        }
        setMachines(machines1);
+       setPartCatalog(partCatalogTmp);
 
     }
 
 
 
-    public void setupCatalog() {
-        
-    }
+
 
 
     public void setupInventory() {
+        Map<Integer, List<CarPart>> inventoryTmp = new HashTableSC<>(20,new SimpleHashFunction());
+        for(PartMachine part1: getMachines())
+            inventoryTmp.put(part1.getPart().getId(), new ArrayList<>());
         
+        setInventory(inventoryTmp);
+
     }
+
     public void storeInInventory() {
-       
+        while (!getProductionBin().isEmpty()) {
+            CarPart part = getProductionBin().pop();
+    
+            if (!part.isDefective()) {
+                // Check if the inventory has a list for this part ID, initialize it if not
+                List<CarPart> partsList = getInventory().get(part.getId());
+                if (partsList == null) {
+                    partsList = new ArrayList<>();
+                    getInventory().put(part.getId(), partsList);
+                }
+                partsList.add(part);
+            } else {
+                // Increment defective count
+                int currentDefectiveCount = defectives.containsKey(part.getId()) ? defectives.get(part.getId()) : 0;
+                defectives.put(part.getId(), currentDefectiveCount + 1);
+            }
+        }
     }
+    
+    
 
 
     public void runFactory(int days, int minutes) {
-        
+        for (int day = 0; day < days; day++) {
+            for (int minute = 0; minute < minutes; minute++) {
+                for (PartMachine machine : getMachines()) {
+                    CarPart producedPart = machine.produceCarPart();
+                    if (producedPart != null) {
+                        getProductionBin().push(producedPart);
+                    }
+                }
+            }
+            // Empty conveyor belts into production bin
+            for (PartMachine machine : getMachines()) {
+                while (!machine.getConveyorBelt().isEmpty()) {
+                    CarPart part = machine.getConveyorBelt().dequeue();
+                    if (part != null) {
+                        getProductionBin().push(part);
+                    }
+                }
+            }
+            storeInInventory();
+        }
+        processOrders();
     }
+    
 
    
     public void processOrders() {
-        //this.orders = setupOrders(orderPath);
-        
+        for (Order order : getOrders()) {
+            boolean canFulfill = true;
+            Map<Integer, Integer> requestedParts = order.getRequestedParts();
+    
+            // Check if all parts are available in required quantities
+            for (Integer partId : requestedParts.getKeys()) {
+                int requiredQuantity = requestedParts.get(partId);
+                List<CarPart> partsList = getInventory().get(partId);
+    
+                if (partsList == null || partsList.size() < requiredQuantity) {
+                    canFulfill = false;
+                    break;
+                }
+            }
+    
+            // Fulfill the order if possible
+            if (canFulfill) {
+                for (Integer partId : requestedParts.getKeys()) {
+                    int requiredQuantity = requestedParts.get(partId);
+                    List<CarPart> partsList = getInventory().get(partId);
+    
+                    for (int i = 0; i < requiredQuantity; i++) {
+                        partsList.remove(0); // Assuming remove(0) removes the first element
+                    }
+                }
+                order.setFulfilled(true); // Mark the order as fulfilled
+            }
+        }
     }
+    
+
+    
+
+    
+    
     /**
      * Generates a report indicating how many parts were produced per machine,
      * how many of those were defective and are still in inventory. Additionally, 

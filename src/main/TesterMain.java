@@ -6,7 +6,6 @@ public class TesterMain {
     public static void main(String[] args) {
         try {
             CarPartFactory cpf = new CarPartFactory("input/orders.csv", "input/parts.csv");
-            cpf.setupMachines(cpf.getPartsPath());
             // System.out.println(cpf.getMachines().get(1));
             // System.out.println(cpf.getMachines().get(6));
             // System.out.println(cpf.getMachines().get(2));
