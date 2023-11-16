@@ -1,10 +1,5 @@
 package main;
-
 import interfaces.Stack;
-
-
-
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -16,96 +11,160 @@ import data_structures.HashTableSC;
 import data_structures.LinkedStack;
 
 
+/**
+ * Factory class for managing car parts production and orders.
+ */
 public class CarPartFactory {
 
     List<PartMachine> machines;
     List<Order> orders;
-
     Stack<CarPart> productionBin = new LinkedStack<>();
 
     
 
 
     Map<Integer, CarPart> partCatalog;
-
     Map<Integer, List<CarPart>> inventory;
-    
     Map<Integer, Integer> defectives = new HashTableSC<>(20, new SimpleHashFunction());;
 
     class SimpleHashFunction implements HashFunction<Integer> {
         @Override
         public int hashCode(Integer key) {
-            // Simple hash code implementation
             return key.hashCode();
         }
     }
 
 
 
-        
+    /**
+     * Constructs a new CarPartFactory with specified paths for orders and parts data.
+     *
+     * @param orderPath Path to the orders CSV file.
+     * @param partsPath Path to the parts CSV file.
+     * @throws IOException If an I/O error occurs.
+     */
     public CarPartFactory(String orderPath, String partsPath) throws IOException {
-        
         setupOrders(orderPath);
         setupMachines(partsPath);
         setupInventory();
-
-        
     }
 
 
 
-
+    /**
+     * Returns the list of part machines.
+     *
+     * @return The list of part machines.
+     */
     public List<PartMachine> getMachines() {
        return this.machines;
     }
+
+
+    /**
+     * Sets the list of part machines.
+     *
+     * @param machines The list of PartMachine instances.
+     */
     public void setMachines(List<PartMachine> machines) {
         this.machines = machines;
     }
 
-
+    /**
+     * Returns the production bin stack.
+     *
+     * @return The stack of CarPart in the production bin.
+     */
     public Stack<CarPart> getProductionBin() {
       return this.productionBin;
     }
+
+    /**
+     * Sets the production bin stack.
+     *
+     * @param production The stack of CarPart for the production bin.
+     */
     public void setProductionBin(Stack<CarPart> production) {
        this.productionBin = production;
     }
 
-
+    /**
+     * Returns the part catalog map.
+     *
+     * @return The map of car parts.
+     */
     public Map<Integer, CarPart> getPartCatalog() {
         return partCatalog;
     }
 
+    /**
+     * Sets the part catalog map.
+     *
+     * @param partCatalog The map of car parts.
+     */
     public void setPartCatalog(Map<Integer, CarPart> partCatalog) {
         this.partCatalog = partCatalog;
     }
 
-
+    /**
+     * Returns the inventory map.
+     *
+     * @return The map of lists of CarPart for the inventory.
+     */
     public Map<Integer, List<CarPart>> getInventory() {
        return inventory;
     }
+    /**
+     * Sets the inventory map.
+     *
+     * @param inventory The map of lists of CarPart for the inventory.
+     */
     public void setInventory(Map<Integer, List<CarPart>> inventory) {
         this.inventory = inventory;
     }
 
-
+    /**
+     * Returns the list of orders.
+     *
+     * @return The list of orders.
+     */
     public List<Order> getOrders() {
         return orders;
     }
+    /**
+     * Sets the list of orders.
+     *
+     * @param orders The list of Order instances.
+     */
     public void setOrders(List<Order> orders) {
         this.orders = orders;
     }
 
-
+    /**
+     * Returns the map of defective counts.
+     *
+     * @return The map of integers representing defective counts.
+     */
     public Map<Integer, Integer> getDefectives() {
         return defectives;
     }
+
+    /**
+     * Sets the map of defective counts.
+     *
+     * @param defectives The map of integers representing defective counts.
+     */
     public void setDefectives(Map<Integer, Integer> defectives) {
         this.defectives = defectives;
     }
 
-
+    /**
+     * Sets up the orders based on a provided CSV file path.
+     *
+     * @param path Path to the orders CSV file.
+     * @throws IOException If an I/O error occurs.
+     */
     public void setupOrders(String path) throws IOException {
-        //HashFunction<Integer> intHashFunction = new BasicHashFunction<Integer>();
         ArrayList<Order> tmpOrders = new ArrayList<Order>(110);
         Map<Integer, Order> ordersMap = new HashTableSC<>(105,new SimpleHashFunction());
         try (BufferedReader br = new BufferedReader(new FileReader(path))) {
@@ -115,7 +174,7 @@ public class CarPartFactory {
                 String[] values = line.split(",", 3);
                 int id = Integer.parseInt(values[0].trim());
                 String customer = values[1].trim();
-                Map<Integer, Integer> requestedParts = parseRequestedParts(values[2]);
+                Map<Integer, Integer> requestedParts = helperRequestedParts(values[2]);
 
                 Order order = new Order(id, customer, requestedParts, false);
                 tmpOrders.add(order);
@@ -125,7 +184,13 @@ public class CarPartFactory {
         setOrders(tmpOrders);
     }
 
-    private Map<Integer, Integer> parseRequestedParts(String partsString) {
+    /**
+     * Parses the requested parts from a string.
+     *
+     * @param partsString The string containing parts information.
+     * @return A map of part IDs to their quantities.
+     */
+    private Map<Integer, Integer> helperRequestedParts(String partsString) {
         Map<Integer, Integer> parts = new HashTableSC<>(10,new SimpleHashFunction());
         String[] splitParts = partsString.split("-");
         for (String part : splitParts) {
@@ -139,7 +204,12 @@ public class CarPartFactory {
      }
 
 
-
+/**
+ * Initializes the machines based on the data from the provided CSV file.
+ *
+ * @param path Path to the parts CSV file.
+ * @throws IOException If an I/O error occurs.
+ */
     public void setupMachines(String path) throws IOException {
        // here you read and add from the csv
        List<PartMachine> machines1 = new ArrayList<>();
@@ -174,7 +244,9 @@ public class CarPartFactory {
 
 
 
-
+/**
+ * Initializes the inventory. Each car part ID will have an empty list in the inventory.
+ */
     public void setupInventory() {
         Map<Integer, List<CarPart>> inventoryTmp = new HashTableSC<>(20,new SimpleHashFunction());
         for(PartMachine part1: getMachines())
@@ -184,6 +256,10 @@ public class CarPartFactory {
 
     }
 
+/**
+ * Processes the content of the production bin and updates the inventory.
+ * Defective parts are not added to the inventory but are counted separately.
+ */
     public void storeInInventory() {
         while (!getProductionBin().isEmpty()) {
             CarPart part = getProductionBin().pop();
@@ -206,7 +282,13 @@ public class CarPartFactory {
     
     
 
-
+/**
+ * Simulates the factory operation for a specified number of days and minutes per day.
+ * It processes the production of car parts and updates the inventory at the end of each day.
+ *
+ * @param days The number of days to simulate.
+ * @param minutes The number of minutes per day to simulate.
+ */
     public void runFactory(int days, int minutes) {
         for (int day = 0; day < days; day++) {
             for (int minute = 0; minute < minutes; minute++) {
@@ -232,7 +314,10 @@ public class CarPartFactory {
     }
     
 
-   
+/**
+ * Processes the orders based on the current inventory.
+ * An order is fulfilled if all requested parts are available in the required quantities.
+ */
     public void processOrders() {
         for (Order order : getOrders()) {
             boolean canFulfill = true;

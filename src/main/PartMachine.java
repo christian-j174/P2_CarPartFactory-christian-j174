@@ -5,6 +5,9 @@ import java.util.Random;
 import data_structures.ListQueue;
 import interfaces.Queue;
 
+/**
+ * Represents a machine part of a factory production line, responsible for producing car parts.
+ */
 public class PartMachine {
 
     int id;
@@ -17,7 +20,16 @@ public class PartMachine {
     int totalPartProduced = 0;
     Random random = new Random();
 
-   
+
+    /**
+     * Constructs a PartMachine with specified parameters.
+     *
+     * @param id The ID of the machine.
+     * @param p1 The template CarPart to be produced by this machine.
+     * @param period The production period of the machine.
+     * @param weightError The error range for the weight of produced parts.
+     * @param chanceOfDefective The chance of producing a defective part.
+     */
     public PartMachine(int id, CarPart p1, int period, double weightError, int chanceOfDefective) {
         this.id = id;
         this.p1 = p1;
@@ -80,6 +92,12 @@ public class PartMachine {
     public void setChanceOfDefective(int chanceOfDefective) {
         this.chanceOfDefective = chanceOfDefective;
     }
+
+
+
+    /**
+     * Resets the conveyor belt of the machine by clearing it and filling it with null values.
+     */    
     public void resetConveyorBelt() {
         // clear the conveyor belt
         while (!conveyorBelt.isEmpty()) {
@@ -92,13 +110,22 @@ public class PartMachine {
     }
     
 
-
+    /**
+     * Advances the timer of the machine and returns the front value.
+     * 
+     * @return The front value of the timer queue.
+     */
     public int tickTimer() {
         int frontTimer = timer.front(); // get the value at the front without removing it
         timer.enqueue(timer.dequeue()); // remove the front value and places it at the back
         return frontTimer;
     }
-    
+
+    /**
+     * Advances the internal timer of the machine and produces a CarPart if applicable.
+     * 
+     * @return The CarPart produced by the machine, or null if no part is produced.
+     */
     public CarPart produceCarPart() {
         CarPart frontPart = conveyorBelt.dequeue(); // Get and remove the front part from the conveyor belt
     
