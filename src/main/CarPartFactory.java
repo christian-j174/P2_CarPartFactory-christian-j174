@@ -167,10 +167,10 @@ public class CarPartFactory {
     public void setupOrders(String path) throws IOException {
         ArrayList<Order> tmpOrders = new ArrayList<Order>(110);
         Map<Integer, Order> ordersMap = new HashTableSC<>(105,new SimpleHashFunction());
-        try (BufferedReader br = new BufferedReader(new FileReader(path))) {
-            br.readLine(); // Skip the header line
+        try (BufferedReader lines2 = new BufferedReader(new FileReader(path))) {
+            lines2.readLine(); // Skip the header line
             String line;
-            while ((line = br.readLine()) != null) {
+            while ((line = lines2.readLine()) != null) {
                 String[] values = line.split(",", 3);
                 int id = Integer.parseInt(values[0].trim());
                 String customer = values[1].trim();
@@ -214,10 +214,10 @@ public class CarPartFactory {
        // here you read and add from the csv
        List<PartMachine> machines1 = new ArrayList<>();
        Map<Integer, CarPart> partCatalogTmp = new HashTableSC<>(20,new SimpleHashFunction());
-       try (BufferedReader br = new BufferedReader(new FileReader(path))) {
-           br.readLine(); // Skip the header line
+       try (BufferedReader lines1 = new BufferedReader(new FileReader(path))) {
+           lines1.readLine();
            String line;
-           while ((line = br.readLine()) != null) {
+           while ((line = lines1.readLine()) != null) {
                String[] values = line.split(",");
                int id = Integer.parseInt(values[0].trim());
                String partName = values[1].trim();
@@ -265,7 +265,7 @@ public class CarPartFactory {
             CarPart part = getProductionBin().pop();
     
             if (!part.isDefective()) {
-                // Check if the inventory has a list for this part ID, initialize it if not
+                // Check if the inventory has a list for this part ID
                 List<CarPart> partsList = getInventory().get(part.getId());
                 if (partsList == null) {
                     partsList = new ArrayList<>();
@@ -299,7 +299,7 @@ public class CarPartFactory {
                     }
                 }
             }
-            // Empty conveyor belts into production bin
+            // Empty conveyor belts 
             for (PartMachine machine : getMachines()) {
                 while (!machine.getConveyorBelt().isEmpty()) {
                     CarPart part = machine.getConveyorBelt().dequeue();
@@ -323,7 +323,7 @@ public class CarPartFactory {
             boolean canFulfill = true;
             Map<Integer, Integer> requestedParts = order.getRequestedParts();
     
-            // Check if all parts are available in required quantities
+            // Check if all parts are available  qty
             for (Integer partId : requestedParts.getKeys()) {
                 int requiredQuantity = requestedParts.get(partId);
                 List<CarPart> partsList = getInventory().get(partId);
@@ -334,17 +334,17 @@ public class CarPartFactory {
                 }
             }
     
-            // Fulfill the order if possible
+            
             if (canFulfill) {
                 for (Integer partId : requestedParts.getKeys()) {
                     int requiredQuantity = requestedParts.get(partId);
                     List<CarPart> partsList = getInventory().get(partId);
     
                     for (int i = 0; i < requiredQuantity; i++) {
-                        partsList.remove(0); // Assuming remove(0) removes the first element
+                        partsList.remove(0); 
                     }
                 }
-                order.setFulfilled(true); // Mark the order as fulfilled
+                order.setFulfilled(true); 
             }
         }
     }

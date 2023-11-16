@@ -127,20 +127,20 @@ public class PartMachine {
      * @return The CarPart produced by the machine, or null if no part is produced.
      */
     public CarPart produceCarPart() {
-        CarPart frontPart = conveyorBelt.dequeue(); // Get and remove the front part from the conveyor belt
+        CarPart frontPart = conveyorBelt.dequeue(); // Get and remove the front part \
     
         if (tickTimer() == 0) { // Check if a part is being produced
-            double weight = p1.getWeight() - weightError + (2 * weightError * random.nextDouble()); // Random weight within the error range
-            boolean isDefective = (totalPartProduced % chanceOfDefective) == 0; // Check if part is defective
+            double weight = p1.getWeight() - weightError + (2 * weightError * random.nextDouble()); 
+            boolean isDefective = (totalPartProduced % chanceOfDefective) == 0; 
     
             CarPart newPart = new CarPart(p1.getId(), p1.getName(), weight, isDefective); // Create new part
-            conveyorBelt.enqueue(newPart); // Add new part to the conveyor belt
-            totalPartProduced++; // Increment the count of total parts produced
+            conveyorBelt.enqueue(newPart);
+            totalPartProduced++; // Increment the count 
         } else {
-            conveyorBelt.enqueue(null); // Add null to the conveyor belt if no part is being produced
+            conveyorBelt.enqueue(null); // Add null to the conveyor belt 
         }
     
-        return frontPart; // Return the part that was at the front of the conveyor belt
+        return frontPart; // Return the part that was at the front 
     }
     
 
